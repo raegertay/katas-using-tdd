@@ -1,5 +1,5 @@
 # Katas Using TDD
-Solving katas on Codewars using TDD
+My learning journey into TDD by solving code katas!
 
 ## Kata #1
 [Distribute server workload](https://www.codewars.com/kata/distribute-server-workload/train/ruby)
