@@ -3,6 +3,7 @@ My learning journey into TDD by solving code katas!
 
 ## Kata #1
 [Distribute server workload](https://www.codewars.com/kata/distribute-server-workload/train/ruby)
+(6 kyu) 
 
 My solution:
 ```ruby
@@ -44,6 +45,7 @@ I had to experiment with a few different methods to figure out that I can use `#
 
 ## Kata #2
 [Simple Fun #332: Catch Thief](https://www.codewars.com/kata/simple-fun-number-332-catch-thief/train/ruby)
+(6 kyu)
 
 My solution:
 ```ruby
@@ -96,8 +98,9 @@ Reflection:
 
 This is one of those kata where I had no clue at all on how to approach the problem. I had to start from the really simple scenario (i.e 'One police with watching range of 1') and progressively add more complex test scenarios. However, after a certain point (i.e 'Two police'), everything just starts falling into the place. And before I knew it, I've got the solution. This kata taught me that the importance of progressively adding complexity to the test cases.
 
-## Kata #4
+## Kata #3
 [Mumbling](https://www.codewars.com/kata/mumbling/train/ruby)
+(7 kyu)
 
 My solution:
 ```ruby
@@ -130,3 +133,104 @@ end
 Reflection:
 
 I feel that TDD isn't really neccessary for this kata. Reason being after the third test, I realised I had to make major changes my code in order to generalize for the scenario, which I could have coded from the start. I guess for easier kata, TDD isn't really worth the effort.
+
+## Kata #4
+[Set - the card game](https://www.codewars.com/kata/set-the-card-game/train/ruby)
+(4 kyu)
+
+My solution:
+```ruby
+def get_solutions( cards )
+  p cards
+  positions = [0,1,2].repeated_permutation(2).to_a + [[3,0], [3,1], [3,2]]
+  possible_combinations = positions.combination(3).to_a
+  solutions = []
+  5.times do
+    possible_combinations.shuffle!
+    used_positions = []
+    solutions << possible_combinations.select do |card_positions|
+      cards_unused = true
+      card_positions.each do |position|  
+        cards_unused = false if used_positions.include?(position)
+      end
+      cards_combination = card_positions.map { |position| cards[position[0]][position[1]] }
+      if is_a_set?(cards_combination) && cards_unused
+        used_positions += card_positions
+        true
+      end
+    end
+  end
+  max_solution_length = solutions.map(&:length).max
+  solutions.find { |solution| solution.length == max_solution_length }
+end
+
+def is_a_set?(cards)
+  %i[count color shape filling].all? do |attribute|
+    values = cards.map(&attribute)
+    same?(values) || unique?(values)
+  end
+end
+
+def same?(values)
+  reference_value = values[0]
+  values.all? { |value| value == reference_value }
+end
+
+def unique?(values)
+  values.uniq.length == values.length
+end
+```
+
+My tests:
+```ruby
+describe '#same?' do
+  it 'should return true if all values in the input array are the same' do
+    Test.assert_equals(same?([1,1,1]), true)
+  end
+  it 'should return false if values in the input array are different' do
+    Test.assert_equals(same?([1,2,1]), false)
+  end
+end
+
+describe '#unique?' do
+  it 'should return true if all values in the input array are unqiue' do
+    Test.assert_equals(unique?([1,2,3]), true)
+  end
+  it 'should return false if values in the input array are not unique' do
+    Test.assert_equals(unique?([1,2,1]), false)
+  end
+end
+
+# Card = Struct.new(:count, :color, :shape, :filling)
+card_1 = Card.new(1, 2, 1, 3)
+card_2 = Card.new(1, 2, 2, 2)
+card_3 = Card.new(1, 2, 3, 1)
+card_4 = Card.new(2, 2, 1, 1)
+
+describe '#is_a_set?' do
+  it 'should return true if the 3 cards form a set' do
+    Test.assert_equals(is_a_set?([card_1, card_2, card_3]), true)
+  end  
+  it 'should return false if the 3 cards do not form a set' do
+    Test.assert_equals(is_a_set?([card_1, card_2, card_4]), false)
+  end
+end
+
+hand = "1212:1113:1111:2222:2113:2111:3112:3113:3111:1222:1223:2211"
+cards_attributes = hand.split(':')
+cards = [[], [], [], []]
+index = 0
+4.times do |x|
+  3.times do |y|
+    attr = cards_attributes[index]
+    cards[x][y] = Card.new(attr[0], attr[1], attr[2], attr[3])
+    index += 1
+  end
+end
+
+p get_solutions(cards)
+```
+
+Reflection:
+
+The toughest kata I had solved so far. It started pretty well when I used TDD to help me code the helper methods. However, when it comes to the main method, I start to find TDD a chore as the it is troublesome to come up with the input data. As such, I decided to give up TDD at this point and went straight to writing the code. I was doing pretty well until I got stuck at a particular test and I had to write the code to generate the data for that particular test. Anyway, I still feel that this it is quite tedious to prepare the test data for this kata even for the simplest case and its probably not the best use case for TDD.
