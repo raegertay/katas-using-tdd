@@ -95,3 +95,38 @@ end
 Reflection:
 
 This is one of those kata where I had no clue at all on how to approach the problem. I had to start from the really simple scenario (i.e 'One police with watching range of 1') and progressively add more complex test scenarios. However, after a certain point (i.e 'Two police'), everything just starts falling into the place. And before I knew it, I've got the solution. This kata taught me that the importance of progressively adding complexity to the test cases.
+
+## Kata #4
+[Mumbling](https://www.codewars.com/kata/mumbling/train/ruby)
+
+My solution:
+```ruby
+def accum(s)
+  s.chars.map.with_index { |c, i| (c * (i+1)).capitalize }.join('-')
+end
+```
+
+My tests:
+```ruby
+Test.describe 'Given one letter' do
+  it 'should return me the letter capitalized' do
+    Test.assert_equals(accum('a'), 'A')
+  end
+end
+
+Test.describe 'Given two letters' do
+  it 'should return me the correct output' do
+    Test.assert_equals(accum('ab'), 'A-Bb')
+  end
+end
+
+Test.describe 'Given three letters' do
+  it 'should return me the correct output' do
+    Test.assert_equals(accum('abc'), 'A-Bb-Ccc')
+  end
+end
+```
+
+Reflection:
+
+I feel that TDD isn't really neccessary for this kata. Reason being after the third test, I realised I had to make major changes my code in order to generalize for the scenario, which I could have coded from the start. I guess for easier kata, TDD isn't really worth the effort.
