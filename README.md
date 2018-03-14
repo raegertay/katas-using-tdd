@@ -234,3 +234,75 @@ p get_solutions(cards)
 Reflection:
 
 The toughest kata I had solved so far. It started pretty well when I used TDD to help me code the helper methods. However, when it comes to the main method, I start to find TDD a chore as the it is troublesome to come up with the input data. As such, I decided to give up TDD at this point and went straight to writing the code. I was doing pretty well until I got stuck at a particular test and I had to write the code to generate the data for that particular test. Anyway, I still feel that this it is quite tedious to prepare the test data for this kata even for the simplest case and its probably not the best use case for TDD.
+
+## Kata #5
+[Simple Events](https://www.codewars.com/kata/simple-events/train/ruby)
+(5 kyu)
+
+My solution:
+```ruby
+class Event
+  attr_reader :functions
+  
+  def initialize
+    @functions = []
+  end
+  
+  def subscribe(function)
+    @functions << function
+  end
+  
+  def unsubscribe(function)
+    @functions.delete(function)
+  end
+  
+  def emit(*args)
+    functions.each { |f| f.call(*args) }
+  end
+end
+```
+
+My tests:
+```ruby
+class Testf
+  attr_accessor :calls, :args
+  def initialize
+    @calls=0
+    @args=[]
+  end
+  def call(*args)
+    @calls+=1
+    @args+=args
+  end
+end
+
+describe 'Event' do
+  it 'should have a .subscribe() method, which takes a function and stores it as its handler' do
+    event = Event.new
+    f=Testf.new
+    event.subscribe(f)
+    Test.assert_equals(event.functions[0], f)
+  end
+  
+  it 'should have an .unsubscribe() method, which takes a function and removes it from its handlers' do
+    event = Event.new
+    f=Testf.new
+    event.subscribe(f)
+    event.unsubscribe(f)
+    Test.assert_equals(event.functions.length, 0)
+  end
+  
+  it 'should have an .emit() method, which takes an arbitrary number of arguments and calls all the stored functions with these arguments' do
+    event = Event.new
+    f=Testf.new
+    event.subscribe(f)
+    args = [1, 'foo', true]
+    event.emit(*args)
+    Test.assert_equals(f.args, args)
+  end
+end
+```
+
+Reflection:
+
+I feel this is a very straightforward kata to use TDD. The key to note is that one would need to create an attribute reader for the stored functions otherwise you will have nothing to assert to.
