@@ -233,7 +233,7 @@ p get_solutions(cards)
 
 Reflection:
 
-The toughest kata I had solved so far. It started pretty well when I used TDD to help me code the helper methods. However, when it comes to the main method, I start to find TDD a chore as the it is troublesome to come up with the input data. As such, I decided to give up TDD at this point and went straight to writing the code. I was doing pretty well until I got stuck at a particular test and I had to write the code to generate the data for that particular test. Anyway, I still feel that this it is quite tedious to prepare the test data for this kata even for the simplest case and its probably not the best use case for TDD.
+The toughest kata I had solved so far. It started pretty well when I used TDD to help me code the helper methods. However, when it comes to the main method, I start to find TDD a chore as the it is troublesome to come up with the input data. As such, I decided to give up TDD at this point and went straight to writing the code. I was doing pretty well until I got stuck at a particular part and I had to write the code to generate the data for that particular test. Anyway, even though I didn't use TDD for the whole kata, it is definitely still useful for part of the solution.
 
 ## Kata #5
 [Simple Events](https://www.codewars.com/kata/simple-events/train/ruby)
@@ -305,4 +305,69 @@ end
 
 Reflection:
 
-I feel this is a very straightforward kata to use TDD. The key to note is that one would need to create an attribute reader for the stored functions otherwise you will have nothing to assert to.
+I feel this is a very straightforward kata to use TDD. The key to note is that one would need to create an attribute reader for the stored functions in order to have something to assert to. I learnt that sometimes its necessary to add certain api to the class in order to make testing easier.
+
+## Kata #6
+[80's Kids #10: Captain Planet](https://www.codewars.com/kata/568eeb1ce6f9e820c800000b/train/ruby)
+(4 kyu)
+
+My solution:
+```ruby
+def parse_data
+  data = $data_file
+  locations = data.scan(/Location: (\w+)/).flatten
+  am_levels = data.scan(/Ammonia: (\d+)/).flatten.map(&:to_i)
+  no_levels = data.scan(/Nitrogen Oxide: (\d+)/).flatten
+  co_levels = data.scan(/Carbon Monoxide: (\d+)/).flatten
+  
+  highest_am_locations = []
+  highest_no_locations = []
+  highest_co_locations = []
+  
+  am_levels.each.with_index do |level, index|
+    highest_am_locations << locations[index] if level == am_levels.max
+  end
+  
+  no_levels.each.with_index do |level, index|
+    highest_no_locations << locations[index] if level == no_levels.max
+  end
+  
+  co_levels.each.with_index do |level, index|
+    highest_co_locations << locations[index] if level == co_levels.max
+  end
+  
+  "Ammonia levels in #{highest_am_locations.join(', ')} are too high. "\
+  "Nitrogen Oxide levels in #{highest_no_locations.join(', ')} are too high. "\
+  "Carbon Monoxide levels in #{highest_co_locations.join(', ')} are too high."
+end
+```
+
+My tests:
+```ruby
+# For testing purpose, allow .parse_data() to accept one argument to pass in our data
+
+one_location_data = "##################################\n"\
+          "Location: DEU\n"\
+          "##################################\n"\
+          "Ammonia: 023 particles\n"\
+          "Nitrogen Oxide: 919 particles\n"\
+          "Carbon Monoxide: 027 particles\n"\
+          "##################################\n"
+          
+
+
+describe "One location only" do
+  it "should report the same location for all gases" do
+    Test.assert_equals(parse_data(one_location_data), "Ammonia levels in DEU are too high. Nitrogen Oxide levels in DEU are too high. Carbon Monoxide levels in DEU are too high.")
+  end
+end
+
+describe "Multiple locations" do
+  it "should report the location with the highest gas level for all gases" do
+    Test.assert_equals(parse_data($data_file), "Ammonia levels in USA, CHN are too high. Nitrogen Oxide levels in DEU are too high. Carbon Monoxide levels in AUS, BHS, CRI are too high.")
+  end
+end
+```
+
+My reflection:
+I only have 2 tests for this kata due to the complexity of preparing the test data. Even so, the first test proves to be extremely useful as it gave me the idea to use #scan and regexp to solve this kata. The idea came about because I was looking for the fastest way to pass the first test. Another thing to note is that I had to tweak the signature of the #parse_data method to accept the test data I prepared while testing. Overall, this kata taught me to never underestimate the importance of the basic test cases because it might give us the ideas to solve the kata.
