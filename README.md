@@ -1,6 +1,15 @@
 # Katas Using TDD
 My learning journey into TDD by solving code katas!
 
+## 5 Steps to TDD*
+1. Quickly add a test.
+2. Run all tests and see the new one fail.
+3. Make a little change.
+4. Run all tests and see them all succeed.
+5. Refactor to remove duplication.
+
+**From "Test-Driven Development By Example" by Kent Beck*
+
 ## Kata #1
 [Distribute server workload](https://www.codewars.com/kata/distribute-server-workload/train/ruby)
 (6 kyu) 
@@ -370,4 +379,99 @@ end
 ```
 
 My reflection:
+
 I only have 2 tests for this kata due to the complexity of preparing the test data. Even so, the first test proves to be extremely useful as it gave me the idea to use #scan and regexp to solve this kata. The idea came about because I was looking for the fastest way to pass the first test. Another thing to note is that I had to tweak the signature of the #parse_data method to accept the test data I prepared while testing. Overall, this kata taught me to never underestimate the importance of the basic test cases because it might give us the ideas to solve the kata.
+
+## Kata #7
+[Roman Numerals Decoder](https://www.codewars.com/kata/roman-numerals-decoder/train/ruby)
+(4 kyu)
+
+My solution:
+```ruby
+ROMAN_VALUES = {
+  'I' => 1,
+  'V' => 5,
+  'X' => 10,
+  'L' => 50,
+  'C' => 100,
+  'D' => 500,
+  'M' => 1000
+}.freeze
+
+NEXT_CHAR_SET = {
+  'I' => /[VX]/,
+  'X' => /[LC]/,
+  'C' => /[DM]/
+}.freeze
+
+def solution(roman)
+  decimal = 0
+  roman.each_char.with_index do |c, i|
+    next_char = roman[i+1]
+    decimal += roman_value( c, subtracted?(next_char, NEXT_CHAR_SET[c]) )
+  end
+  decimal
+end
+
+private
+
+def subtracted?(next_char, next_char_set)
+  return false unless next_char_set
+  next_char && next_char.match(next_char_set)
+end
+
+def roman_value(roman, subtracted=false)
+  subtracted ? -ROMAN_VALUES[roman] : ROMAN_VALUES[roman]
+end
+```
+
+My tests:
+```ruby
+require "minitest/autorun"
+
+describe 'solution' do
+  it "should return 1 for 'I'" do
+    solution('I').must_equal 1
+  end
+  
+  it "should return 2 for 'II'" do
+    solution('II').must_equal 2
+  end
+
+  it "should return 3 for 'III'" do
+    solution('III').must_equal 3
+  end
+
+  it "should return 4 for 'IV'" do
+    solution('IV').must_equal 4
+  end
+
+  it "should return 5 for 'V'" do
+    solution('V').must_equal 5
+  end
+
+  it "should return 6 for 'VI'" do
+    solution('VI').must_equal 6
+  end
+
+  it "should return 7 for 'VII'" do
+    solution('VII').must_equal 7
+  end
+
+  it "should return 9 for 'IX'" do
+    solution('IX').must_equal 9
+  end
+
+  it "should return 10 for 'X'" do
+    solution('X').must_equal 10
+  end
+
+  it "should return 14 for 'XL'" do
+    solution('XL').must_equal 40
+  end
+end
+```
+
+My Reflection:
+
+For this kata, I find it really hard to refactor and generalize my code after making the test case pass. For example, for the roman number "IV", it took me quite a while to get the logic to make the "I" a subtracted number instead of addition. However, after I saw the top solution in codewars, I realized I could have just hard coded "IV" as 4, which make the code much easier to write and understand. Basically, I generalized my solution the wrong way and it became over-engineered. This kata taught me to be careful of refactoring too much.
