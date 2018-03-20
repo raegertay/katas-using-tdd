@@ -475,3 +475,52 @@ end
 My Reflection:
 
 For this kata, I find it really hard to refactor and generalize my code after making the test case pass. For example, for the roman number "IV", it took me quite a while to get the logic to make the "I" a subtracted number instead of addition. However, after I saw the top solution in codewars, I realized I could have just hard coded "IV" as 4, which make the code much easier to write and understand. Basically, I generalized my solution the wrong way and it became over-engineered. This kata taught me to be careful of refactoring too much.
+
+## Kata #8
+[Pick peaks](https://www.codewars.com/kata/5279f6fe5ab7f447890006a7/train/javascript)
+(Javascript - 4 kyu)
+
+My solution:
+```javascript
+function pickPeaks(arr) {
+  console.log(arr)
+  let pos = [], peaks = []
+  if (arr.length === 0) {
+    return {pos: pos, peaks: peaks}
+  } else {
+    for (let i=1; i < arr.length-1; i++) {
+      if ( (arr[i] > arr[i-1] && arr[i] > arr[i+1]) || 
+           (arr[i] > arr[i-1] && arr[i] === arr[i+1] && arr[i] > arr[arr.length-1]) ) {
+        pos.push(i)
+        peaks.push(arr[i])
+      }
+    }
+    return {pos: pos, peaks: peaks}
+  }
+}
+```
+
+My tests:
+```javascript
+describe('pickPeaks', function() {
+  it('should return empty array for pos and peaks when arr is empty', function() {
+    Test.assertSimilar(pickPeaks([]), {pos: [], peaks: []})
+  }) 
+  
+  it('should return the pos and peak correctly when arr has only one peak', function() {
+    Test.assertSimilar(pickPeaks([1, 2, 1]), {pos: [1], peaks: [2]})
+  }) 
+  
+  it('should return the pos and peaks correctly when arr has two peaks', function() {
+    Test.assertSimilar(pickPeaks([1, 2, 1, 3, 1]), {pos: [1, 3], peaks: [2, 3]})
+  })
+  
+  it('should return the the first pos and value of the beginning of a plateau', function() {
+    Test.assertSimilar(pickPeaks([1, 2, 2, 2, 1]), {pos: [1], peaks: [2]})
+  })
+  
+  it('should ignore peaks on the edge of the array', function() {
+    Test.assertSimilar(pickPeaks([ 2, 1, 3, 1, 2, 2, 2, 2 ]), {pos: [2], peaks: [3]})
+  })
+})
+```
